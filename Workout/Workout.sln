@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workout.Api", "Presentation
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workout.Logic", "Workout.Logic\Workout.Logic.csproj", "{4DE0D64B-4346-4B37-B766-781960AEA7BD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{833A88E3-9784-46A8-BB23-878A2DDC5B79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{90490EF2-369C-4FB9-A420-24CA8DC10390} = {833A88E3-9784-46A8-BB23-878A2DDC5B79}
+		{D2771D2D-93A8-45E1-9C15-123A58D6FE46} = {833A88E3-9784-46A8-BB23-878A2DDC5B79}
+		{4DE0D64B-4346-4B37-B766-781960AEA7BD} = {833A88E3-9784-46A8-BB23-878A2DDC5B79}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D25F5BCB-C1E4-4DA4-BB22-8FED96A0F9B9}
