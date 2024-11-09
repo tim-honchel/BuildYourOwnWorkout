@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Api.Controllers
+namespace Workout.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
