@@ -1,4 +1,4 @@
-﻿namespace Workout.IntegrationTests
+﻿namespace Workouts.IntegrationTests
 {
     public class CreateWorkoutTests
     {

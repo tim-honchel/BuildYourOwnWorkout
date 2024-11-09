@@ -1,4 +1,4 @@
-﻿namespace Workout.Logic.Interfaces
+﻿namespace Workouts.Logic.Interfaces
 {
     public interface IUserLogic
     {

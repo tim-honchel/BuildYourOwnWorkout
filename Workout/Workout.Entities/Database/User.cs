@@ -1,8 +1,8 @@
-﻿namespace Workout.Entities.Database
+﻿namespace Workouts.Entities.Database
 {
     public class User
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string NameIdentifierClaim { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public bool Active { get; set; }

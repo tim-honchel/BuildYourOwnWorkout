@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Workout.Data
+namespace Workouts.Data
 {
     public class Context : DbContext
     {

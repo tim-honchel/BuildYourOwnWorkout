@@ -1,4 +1,4 @@
-﻿namespace Workout.UnitTests.Services
+﻿namespace Workouts.UnitTests.Services
 {
     public class WorkoutServiceTests
     {

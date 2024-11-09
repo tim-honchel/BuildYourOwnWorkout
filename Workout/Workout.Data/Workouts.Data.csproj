@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Workout.Entities\Workouts.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

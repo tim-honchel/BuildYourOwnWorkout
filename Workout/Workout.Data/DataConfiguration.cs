@@ -1,4 +1,4 @@
-﻿namespace Workout.Data
+﻿namespace Workouts.Data
 {
     public static class DataConfiguration
     {

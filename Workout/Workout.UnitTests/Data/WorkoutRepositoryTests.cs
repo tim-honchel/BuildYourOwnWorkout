@@ -1,4 +1,4 @@
-﻿namespace Workout.UnitTests.Data
+﻿namespace Workouts.UnitTests.Data
 {
     public class WorkoutRepositoryTests
     {

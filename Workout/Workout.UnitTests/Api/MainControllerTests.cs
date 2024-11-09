@@ -1,4 +1,4 @@
-﻿namespace Workout.UnitTests.Api
+﻿namespace Workouts.UnitTests.Api
 {
     public class MainControllerTests
     {

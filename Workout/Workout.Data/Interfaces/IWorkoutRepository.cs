@@ -1,4 +1,4 @@
-﻿namespace Workout.Data.Interfaces
+﻿namespace Workouts.Data.Interfaces
 {
     public interface IWorkoutRepository
     {

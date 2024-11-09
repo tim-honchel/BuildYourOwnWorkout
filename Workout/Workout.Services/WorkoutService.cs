@@ -1,4 +1,4 @@
-﻿namespace Workout.Services
+﻿namespace Workouts.Services
 {
     public class WorkoutService
     {

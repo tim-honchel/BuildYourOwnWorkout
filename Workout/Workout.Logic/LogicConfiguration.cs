@@ -1,4 +1,4 @@
-﻿namespace Workout.Logic
+﻿namespace Workouts.Logic
 {
     public static class LogicConfiguration
     {

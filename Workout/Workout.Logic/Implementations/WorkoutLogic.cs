@@ -1,6 +1,6 @@
-﻿using Workout.Logic.Interfaces;
+﻿using Workouts.Logic.Interfaces;
 
-namespace Workout.Logic.Implementations
+namespace Workouts.Logic.Implementations
 {
     public class WorkoutLogic : IWorkoutLogic
     {

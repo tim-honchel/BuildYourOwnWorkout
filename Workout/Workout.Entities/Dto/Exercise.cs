@@ -1,4 +1,4 @@
-﻿namespace Workout.Entities.Dto
+﻿namespace Workouts.Entities.Dto
 {
     public class Exercise
     {

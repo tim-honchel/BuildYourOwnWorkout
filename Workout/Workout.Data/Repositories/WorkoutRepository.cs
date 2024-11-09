@@ -1,6 +1,6 @@
-﻿using Workout.Data.Interfaces;
+﻿using Workouts.Data.Interfaces;
 
-namespace Workout.Data.Repositories
+namespace Workouts.Data.Repositories
 {
     public class WorkoutRepository : IWorkoutRepository
     {
