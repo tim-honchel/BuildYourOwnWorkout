@@ -20,12 +20,4 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Api\" />
-    <Folder Include="Data\" />
-    <Folder Include="Logic\" />
-    <Folder Include="Services\" />
-    <Folder Include="Presentation\" />
-  </ItemGroup>
-
 </Project>
