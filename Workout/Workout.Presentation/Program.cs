@@ -1,4 +1,4 @@
-using Workout.Presentation.Components;
+using Workouts.Presentation.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
