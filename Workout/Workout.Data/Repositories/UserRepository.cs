@@ -15,17 +15,20 @@ namespace Workouts.Data.Repositories
 
         public void AddUser(User user)
         {
-            throw new NotImplementedException();
+            Context.User.Add(user);
+            Context.SaveChanges();
         }
 
         public User GetUser(string nameIdentifierClaim)
         {
-            throw new NotImplementedException();
+            return Context.User
+                .FirstOrDefault(u => u.NameIdentifierClaim == nameIdentifierClaim);
         }
 
         public void UpdateUser(User user)
         {
-            throw new NotImplementedException();
+            Context.User .Update(user);
+            Context.SaveChanges();
         }
     }
 }

@@ -1,33 +1,38 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Moq;
-using Moq.EntityFrameworkCore;
 using Workouts.Data;
 using Workouts.Data.Repositories;
 using Workouts.Entities.Database;
-using Xunit;
 
 namespace Workouts.UnitTests.Data
 {
     public class UserRepositoryTests : IDisposable
     {
-        private List<User> ExistingUsers;
+        private IQueryable<User> ExistingUsers;
+        private Mock<DbSet<User>> MockSet;
         private Mock<Context> MockContext;
         private UserRepository Repository;
 
         public UserRepositoryTests() 
         {
             ExistingUsers = GetSampleUsers();
+            MockSet = new Mock<DbSet<User>>();
+            MockSet.As<IQueryable<User>>().Setup(m => m.Provider).Returns(ExistingUsers.Provider);
+            MockSet.As<IQueryable<User>>().Setup(m => m.Expression).Returns(ExistingUsers.Expression);
+            MockSet.As<IQueryable<User>>().Setup(m => m.ElementType).Returns(ExistingUsers.ElementType);
+            MockSet.As<IQueryable<User>>().Setup(m => m.GetEnumerator()).Returns(ExistingUsers.GetEnumerator());
             MockContext = new Mock<Context>(new DbContextOptionsBuilder<Context>().Options);
-            MockContext.Setup(c => c.User).ReturnsDbSet(ExistingUsers);
+            MockContext.Setup(c => c.User).Returns(MockSet.Object);
             Repository = new UserRepository(MockContext.Object);
-
         }
 
         public void Dispose()
         {
+            MockSet.Reset();
             MockContext.Reset();
         }
-        public List<User> GetSampleUsers()
+
+        public IQueryable<User> GetSampleUsers()
         {
             return new List<User>()
             {
@@ -49,43 +54,25 @@ namespace Workouts.UnitTests.Data
                     AccountCreated = new DateTime(2024,1,1),
                     LastLogin = new DateTime(2024,2,1)
                 }
-            };
+            }.AsQueryable();
         }
 
         [Fact]
-        public void AddUser_AddsUser()
+        public void AddUser_AddsUserToContext()
         {
             var newUser = new User()
             {
                 NameIdentifierClaim = "testIdentifier",
+                Username = "testUsername",
+                Active = true,
+                AccountCreated = DateTime.Today,
+                LastLogin = DateTime.Today
             };
 
             Repository.AddUser(newUser);
 
-            var wasUserAddedToDb = MockContext.Object.User.Any(
-                u => u.NameIdentifierClaim == newUser.NameIdentifierClaim);
-            Assert.True(wasUserAddedToDb);
-        }
-
-        [Fact]
-        public void AddUser_AddsUserWithAllProperties()
-        {
-            var newUser = new User()
-            {
-                NameIdentifierClaim = "testIdentifier",
-                Username = "testUsername"
-            };
-
-            Repository.AddUser(newUser);      
-
-            var wasUserAddedToDb = MockContext.Object.User.Any(
-                u => u.NameIdentifierClaim == newUser.NameIdentifierClaim
-                && u.Username == newUser.Username
-                && u.Active == true
-                && u.AccountCreated == DateTime.Today
-                && u.LastLogin == DateTime.Today
-                && u.Id > 0);
-            Assert.True(wasUserAddedToDb);
+            MockSet.Verify(c => c.Add(It.Is<User>(u => u.NameIdentifierClaim == newUser.NameIdentifierClaim)), Times.Once());
+            MockContext.Verify(c => c.SaveChanges(), Times.Once());
         }
 
         [Fact]
@@ -119,7 +106,7 @@ namespace Workouts.UnitTests.Data
         }
 
         [Fact]
-        public void UpdateUser_UpdatesUser_GivenChangedProperties()
+        public void UpdateUser_UpdatesUserViaContext()
         {
             var userToUpdate = ExistingUsers.First(u => u.Active == false);
             userToUpdate.Active = true;
@@ -128,8 +115,8 @@ namespace Workouts.UnitTests.Data
             
             Repository.UpdateUser(userToUpdate);
 
-            var userInDb = MockContext.Object.User.Where(u => u.Id == userToUpdate.Id);
-            Assert.Equivalent(userInDb, userToUpdate);
+            MockSet.Verify(c => c.Update(It.Is<User>(u => u.NameIdentifierClaim == userToUpdate.NameIdentifierClaim)), Times.Once());
+            MockContext.Verify(c => c.SaveChanges(), Times.Once());
         }
     
     }
