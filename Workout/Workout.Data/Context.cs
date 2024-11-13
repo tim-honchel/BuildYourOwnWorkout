@@ -10,7 +10,7 @@ namespace Workouts.Data
         }
 
         public virtual DbSet<User> User { get; set; }
-        public DbSet<Workout> Workout { get; set; }
+        public virtual DbSet<Workout> Workout { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

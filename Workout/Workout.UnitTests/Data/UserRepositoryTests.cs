@@ -32,7 +32,7 @@ namespace Workouts.UnitTests.Data
             MockContext.Reset();
         }
 
-        public IQueryable<User> GetSampleUsers()
+        private IQueryable<User> GetSampleUsers()
         {
             return new List<User>()
             {
@@ -58,7 +58,7 @@ namespace Workouts.UnitTests.Data
         }
 
         [Fact]
-        public void AddUser_AddsUserToContext()
+        public void AddUser_AddsUser()
         {
             var newUser = new User()
             {
@@ -106,7 +106,7 @@ namespace Workouts.UnitTests.Data
         }
 
         [Fact]
-        public void UpdateUser_UpdatesUserViaContext()
+        public void UpdateUser_UpdatesUser()
         {
             var userToUpdate = ExistingUsers.First(u => u.Active == false);
             userToUpdate.Active = true;

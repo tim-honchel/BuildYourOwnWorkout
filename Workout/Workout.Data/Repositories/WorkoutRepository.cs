@@ -18,12 +18,12 @@ namespace Workouts.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Workout GetWorkoutById(int id)
+        public Workout GetWorkoutById(long id)
         {
             throw new NotImplementedException();
         }
 
-        public List<Workout> GetWorkoutsByUserId(int userId)
+        public List<Workout> GetWorkoutsByUserId(long userId)
         {
             throw new NotImplementedException();
         }
