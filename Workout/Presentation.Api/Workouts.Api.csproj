@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Workout.Data\Workouts.Data.csproj" />
+    <ProjectReference Include="..\Workout.Logic\Workouts.Logic.csproj" />
   </ItemGroup>
 
 </Project>
