@@ -130,13 +130,13 @@ namespace Workouts.UnitTests.Data
         }
 
         [Fact]
-        public void GetWorkoutsByUserId_ReturnsNull_GivenUserIdWithoutWorkouts()
+        public void GetWorkoutsByUserId_ReturnsEmpty_GivenUserIdWithoutWorkouts()
         {
             long nonexistentUserId = 999;
 
             var returnedWorkouts = Repository.GetWorkoutsByUserId(nonexistentUserId);
 
-            Assert.Null(returnedWorkouts);
+            Assert.Empty(returnedWorkouts);
         }
 
         [Fact]

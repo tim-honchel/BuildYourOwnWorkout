@@ -6,7 +6,7 @@ namespace Workouts.Data.Repositories
 {
     public class WorkoutRepository : IWorkoutRepository
     {
-        public IDbContextFactory<Context> ContextFactory { get; set; }
+        private IDbContextFactory<Context> ContextFactory { get; set; }
 
         public WorkoutRepository(IDbContextFactory<Context> contextFactory)
         {
@@ -15,22 +15,37 @@ namespace Workouts.Data.Repositories
 
         public void AddWorkout(Workout workout)
         {
-            throw new NotImplementedException();
+            using var context = ContextFactory.CreateDbContext();
+            context.Workout.Add(workout);
+            context.SaveChanges();
+            context.Dispose();
         }
 
         public Workout GetWorkoutById(long id)
         {
-            throw new NotImplementedException();
+            using var context = ContextFactory.CreateDbContext();
+            var workout = context.Workout
+                .FirstOrDefault(w => w.Id == id);
+            context.Dispose();
+            return workout;
         }
 
         public List<Workout> GetWorkoutsByUserId(long userId)
         {
-            throw new NotImplementedException();
+            using var context = ContextFactory.CreateDbContext();
+            var workouts = context.Workout
+                .Where(w => w.UserId == userId)
+                .ToList();
+            context.Dispose();
+            return workouts;
         }
 
         public void UpdateWorkout(Workout workout)
         {
-            throw new NotImplementedException();
+            using var context = ContextFactory.CreateDbContext();
+            context.Workout.Update(workout);
+            context.SaveChanges();
+            context.Dispose();
         }
     }
 }

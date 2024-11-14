@@ -11,6 +11,7 @@ namespace Workouts.UnitTests.Data
         private IQueryable<User> ExistingUsers;
         private Mock<DbSet<User>> MockSet;
         private Mock<Context> MockContext;
+        private Mock<IDbContextFactory<Context>> MockFactory;
         private UserRepository Repository;
 
         public UserRepositoryTests() 
@@ -23,7 +24,9 @@ namespace Workouts.UnitTests.Data
             MockSet.As<IQueryable<User>>().Setup(m => m.GetEnumerator()).Returns(ExistingUsers.GetEnumerator());
             MockContext = new Mock<Context>(new DbContextOptionsBuilder<Context>().Options);
             MockContext.Setup(c => c.User).Returns(MockSet.Object);
-            Repository = new UserRepository(MockContext.Object);
+            MockFactory = new Mock<IDbContextFactory<Context>>();
+            MockFactory.Setup(f => f.CreateDbContext()).Returns(MockContext.Object);
+            Repository = new UserRepository(MockFactory.Object);
         }
 
         public void Dispose()
