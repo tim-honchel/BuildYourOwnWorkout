@@ -3,6 +3,7 @@ using Moq;
 using System.Security.Claims;
 using System.Security.Principal;
 using Workouts.Data.Interfaces;
+using Workouts.Entities.CustomExceptions;
 using Workouts.Entities.Database;
 using Workouts.Logic.Implementations;
 
@@ -10,8 +11,10 @@ namespace Workouts.UnitTests.Logic
 {
     public class UserLogicTests : IDisposable
     {
+        private User DeactivatedUser { get; set; }
         private User ExistingUser { get; set; }
         private User NewUser { get; set; }
+        private Mock<HttpContext> MockContextForDeactivatedUser { get; set; }
         private Mock<HttpContext> MockContextForExistingUser { get; set; }
         private Mock<HttpContext> MockContextForNewUser { get; set; }
         private Mock<IUserRepository> MockRepository { get; set; }
@@ -19,25 +22,22 @@ namespace Workouts.UnitTests.Logic
 
         public UserLogicTests() 
         { 
+
             ExistingUser = GetExistingUser();
-            NewUser = GetNewUser();
-
-            var existingUserClaims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, ExistingUser.NameIdentifierClaim) };
-            var existingUserIdentity = new ClaimsIdentity(existingUserClaims);
-            var existingUserPrincipal = new ClaimsPrincipal( new List<ClaimsIdentity>() { existingUserIdentity});
-
             MockContextForExistingUser = new Mock<HttpContext>();
-            MockContextForExistingUser.Setup(m => m.User).Returns(existingUserPrincipal);
+            MockContextForExistingUser.Setup(m => m.User).Returns(GetClaimsPrincipal(ExistingUser));
 
-            var newUserClaims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, NewUser.NameIdentifierClaim) };
-            var newUserIdentity = new ClaimsIdentity(newUserClaims);
-            var newUserPrincipal = new ClaimsPrincipal(new List<ClaimsIdentity>() { newUserIdentity });
-
+            NewUser = GetNewUser();
             MockContextForNewUser = new Mock<HttpContext>();
-            MockContextForNewUser.Setup(m => m.User).Returns(newUserPrincipal);
+            MockContextForNewUser.Setup(m => m.User).Returns(GetClaimsPrincipal(NewUser));
+
+            DeactivatedUser = GetDeactivatedUser();
+            MockContextForDeactivatedUser = new Mock<HttpContext>();
+            MockContextForDeactivatedUser.Setup(m => m.User).Returns(GetClaimsPrincipal(DeactivatedUser));
 
             MockRepository = new Mock<IUserRepository>();
             MockRepository.Setup(m => m.GetUser(It.Is<string>(i => i == ExistingUser.NameIdentifierClaim))).Returns(ExistingUser);
+            MockRepository.Setup(m => m.GetUser(It.Is<string>(i => i == DeactivatedUser.NameIdentifierClaim))).Returns(DeactivatedUser);
             Logic = new UserLogic(MockRepository.Object);
         }
 
@@ -46,6 +46,27 @@ namespace Workouts.UnitTests.Logic
             MockContextForExistingUser.Reset();
             MockContextForNewUser.Reset();
             MockRepository.Reset();
+        }
+
+        private ClaimsPrincipal GetClaimsPrincipal(User user)
+        {
+            var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.NameIdentifierClaim) };
+            var identity = new ClaimsIdentity(claims);
+            var principal = new ClaimsPrincipal( new List<ClaimsIdentity>() { identity});
+            return principal;
+        }
+
+        private User GetDeactivatedUser()
+        {
+            return new User()
+            {
+                Id = 2,
+                NameIdentifierClaim = "deactivatedIdentifier",
+                Username = "deactivatedUsername",
+                Active = false,
+                AccountCreated = new DateTime(2024, 1, 1),
+                LastLogin = new DateTime(2024, 2, 1),
+            };
         }
 
         private User GetExistingUser()
@@ -86,6 +107,12 @@ namespace Workouts.UnitTests.Logic
             Logic.GetCurrentUser(MockContextForNewUser.Object);
 
             MockRepository.Verify(m => m.AddUser(It.Is<User>(u => u.NameIdentifierClaim == NewUser.NameIdentifierClaim)), Times.Once());
+        }
+
+        [Fact]
+        public void GetCurrentUser_ThrowsCustomException_GivenDeactivatedUser()
+        {
+            Assert.Throws<DeactivatedUserException>(() => Logic.GetCurrentUser(MockContextForDeactivatedUser.Object));
         }
 
         [Fact]

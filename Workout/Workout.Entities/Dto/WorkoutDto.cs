@@ -2,7 +2,7 @@
 {
     public class WorkoutDto
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Title { get; set; } = "";
         public List<Exercise> Exercises { get; set; } = new();
         public bool AudioEndExercise { get; set; }

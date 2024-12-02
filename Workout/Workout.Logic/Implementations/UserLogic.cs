@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Workouts.Data.Interfaces;
+using Workouts.Entities.CustomExceptions;
 using Workouts.Entities.Database;
 using Workouts.Logic.Interfaces;
 
@@ -26,6 +27,10 @@ namespace Workouts.Logic.Implementations
             {
                 AddUser(context, identifier);
                 user = Repository.GetUser(identifier);
+            }
+            else if (user.Active == false)
+            {
+                throw new DeactivatedUserException();
             }
             else if (user.LastLogin < DateTime.Today)
             {
