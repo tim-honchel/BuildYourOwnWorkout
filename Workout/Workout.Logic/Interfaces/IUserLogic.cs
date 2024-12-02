@@ -6,6 +6,6 @@ namespace Workouts.Logic.Interfaces
     public interface IUserLogic
     {
         User GetCurrentUser(HttpContext context);
-        void UpdateUser(User user);
+        void UpdateUsername(User user, string newUsername);
     }
 }

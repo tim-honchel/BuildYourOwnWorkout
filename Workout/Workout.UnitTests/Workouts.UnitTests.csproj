@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Workout.Data\Workouts.Data.csproj" />
     <ProjectReference Include="..\Workout.Entities\Workouts.Entities.csproj" />
+    <ProjectReference Include="..\Workout.Logic\Workouts.Logic.csproj" />
   </ItemGroup>
 
   <ItemGroup>
