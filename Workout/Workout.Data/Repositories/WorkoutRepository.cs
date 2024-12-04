@@ -13,12 +13,13 @@ namespace Workouts.Data.Repositories
             ContextFactory = contextFactory;
         }
 
-        public void AddWorkout(Workout workout)
+        public long AddWorkout(Workout workout)
         {
             using var context = ContextFactory.CreateDbContext();
             context.Workout.Add(workout);
             context.SaveChanges();
             context.Dispose();
+            return workout.Id;
         }
 
         public Workout GetWorkoutById(long id)

@@ -1,9 +1,13 @@
 ﻿using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Workouts.Data.Interfaces;
+using Workouts.Entities.CustomExceptions;
 using Workouts.Entities.Database;
 using Workouts.Entities.Dto;
 using Workouts.Logic.Interfaces;
 
+[assembly: InternalsVisibleTo("Workouts.UnitTests")]
 namespace Workouts.Logic.Implementations
 {
     public class WorkoutLogic : IWorkoutLogic
@@ -14,17 +18,79 @@ namespace Workouts.Logic.Implementations
         {
             Repository = repository;
         }
-        public long AddWorkout(WorkoutDto workout)
+        public long AddWorkout(WorkoutDto workoutDto)
         {
-            throw new NotImplementedException();
+            var workout = ConvertWorkoutDtoToWorkout(workoutDto);
+            return Repository.AddWorkout(workout);
         }
 
         public void ArchiveWorkout(long workoutId)
         {
-            throw new NotImplementedException();
+            var workout = Repository.GetWorkoutById(workoutId);
+            workout.Active = false;
+            Repository.UpdateWorkout(workout);
         }
 
-        public Workout ConvertWorkoutDtoToWorkout(WorkoutDto workoutDto)
+        public WorkoutDto GetWorkoutById(long workoutId)
+        {
+            var workout = Repository.GetWorkoutById(workoutId);
+            if (workout == null)
+            {
+                throw new WorkoutDoesNotExistException();
+            }
+            var workoutDto = ConvertWorkoutToWorkoutDto(workout);
+            return workoutDto;
+        }
+
+        public List<Workout> GetWorkoutsByUserId(long userId)
+        {
+            var workouts = Repository.GetWorkoutsByUserId(userId) ?? new List<Workout>();
+            return workouts;
+        }
+
+        public void UnarchiveWorkout(long workoutId)
+        {
+            var workout = Repository.GetWorkoutById(workoutId);
+            workout.Active = true;
+            Repository.UpdateWorkout(workout);
+        }
+
+        public void UpdateWorkout(WorkoutDto workoutDto)
+        {
+            var workout = ConvertWorkoutDtoToWorkout(workoutDto);
+            Repository.UpdateWorkout(workout);
+        }
+
+        public string ValidateWorkout(WorkoutDto workoutDto)
+        {
+            string validationErrorMessage = string.Empty;
+
+            if (workoutDto == null)
+            {
+                validationErrorMessage = "Workout data is empty or was not received.";
+                return validationErrorMessage;
+            }
+            if (string.IsNullOrEmpty(workoutDto.Title))
+            {
+                validationErrorMessage += "The workout title is blank.";
+            }
+            if (!Regex.Match(workoutDto.Title, "^[a-zA-Z0-9-_'.,;?!#$%&* ]*$").Success)
+            {
+                validationErrorMessage += "The workout title is invalid.";
+            }
+            if (workoutDto.Exercises == null || workoutDto.Exercises.Count == 0)
+            {
+                validationErrorMessage += "The workout does not contain any exercises.";
+            }
+            if (workoutDto.TransitionTime < 0 || workoutDto.TransitionTime > 10)
+            {
+                validationErrorMessage += "Transition time value is invalid.";
+            }
+
+            return validationErrorMessage;
+        }
+
+        internal Workout ConvertWorkoutDtoToWorkout(WorkoutDto workoutDto)
         {
             var settings = new WorkoutSettings()
             {
@@ -44,7 +110,7 @@ namespace Workouts.Logic.Implementations
             };
         }
 
-        public WorkoutDto ConvertWorkoutToWorkoutDto(Workout workout)
+        internal WorkoutDto ConvertWorkoutToWorkoutDto(Workout workout)
         {
             var settings = JsonConvert.DeserializeObject<WorkoutSettings>(workout.SettingsJson) ?? new WorkoutSettings();
 
@@ -61,12 +127,12 @@ namespace Workouts.Logic.Implementations
             };
             return workoutDto;
         }
-
-        public WorkoutDto GetSampleWorkoutDto()
+        internal WorkoutDto GetSampleWorkoutDto()
         {
             var workout = new WorkoutDto();
 
             workout.Id = -1;
+            workout.Title = "Sample Workout";
 
             workout.Exercises = new List<Exercise>()
                 {
@@ -95,31 +161,6 @@ namespace Workouts.Logic.Implementations
             workout.TransitionTime = 2;
 
             return workout;
-        }
-
-        public WorkoutDto GetWorkoutById(long workoutId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Workout> GetWorkoutsByUserId(long userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UnarchiveWorkout(long workoutId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateWorkout(WorkoutDto workout)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string ValidateWorkout(WorkoutDto workout)
-        {
-            throw new NotImplementedException();
         }
     }
 }

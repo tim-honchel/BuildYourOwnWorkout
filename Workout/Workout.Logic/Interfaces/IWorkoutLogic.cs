@@ -5,16 +5,13 @@ namespace Workouts.Logic.Interfaces
 {
     public interface IWorkoutLogic
     {
-        long AddWorkout(WorkoutDto workout);
+        long AddWorkout(WorkoutDto workoutDto);
         void ArchiveWorkout(long workoutId);
-        Workout ConvertWorkoutDtoToWorkout(WorkoutDto workoutDto);
-        WorkoutDto ConvertWorkoutToWorkoutDto(Workout workout);
-        WorkoutDto GetSampleWorkoutDto();
         List<Workout> GetWorkoutsByUserId(long userId);
         WorkoutDto GetWorkoutById(long workoutId); 
-        void UpdateWorkout(WorkoutDto workout);
+        void UpdateWorkout(WorkoutDto workoutDto);
         void UnarchiveWorkout(long workoutId);
-        string ValidateWorkout(WorkoutDto workout);
+        string ValidateWorkout(WorkoutDto workoutDto);
 
     }
 }

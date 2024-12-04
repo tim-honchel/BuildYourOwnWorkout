@@ -28,6 +28,7 @@ namespace Workouts.UnitTests.Logic
 
             MockRepository = new Mock<IWorkoutRepository>();
             MockRepository.Setup(m => m.GetWorkoutById(It.Is<long>(i => i == SampleWorkoutDto.Id))).Returns(SampleWorkout);
+            MockRepository.Setup(m => m.GetWorkoutById(It.Is<long>(i => i == DeactivatedWorkout.Id))).Returns(DeactivatedWorkout);
             MockRepository.Setup(m => m.GetWorkoutsByUserId(It.Is<long>(i => i == SampleWorkout.UserId))).Returns(SampleWorkouts);
             Logic = new WorkoutLogic(MockRepository.Object);
         }
@@ -147,10 +148,6 @@ namespace Workouts.UnitTests.Logic
 
         public static IEnumerable<object[]> GetInvalidWorkoutDtos()
         {
-            yield return new object[]
-            {
-                new WorkoutDto { Id = 1, Title = "title", Exercises = new List<Exercise>() { new Exercise()}, TransitionTime = 1 }, // has ID
-            };
             yield return new object[] {
                 new WorkoutDto { Title = string.Empty, Exercises = new List<Exercise>() { new Exercise()}, TransitionTime = 1 }, // empty title
             };

@@ -4,7 +4,7 @@ namespace Workouts.Data.Interfaces
 {
     public interface IWorkoutRepository
     {
-        void AddWorkout(Workout workout);
+        long AddWorkout(Workout workout);
         Workout GetWorkoutById(long id);
         List<Workout> GetWorkoutsByUserId(long userId);
         void UpdateWorkout(Workout workout);
