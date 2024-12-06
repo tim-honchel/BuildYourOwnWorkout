@@ -14,6 +14,7 @@ namespace Workouts.UnitTests.Logic
         private Workout SampleWorkout { get; set; }
         private Workout DeactivatedWorkout { get; set; }
         private List<Workout> SampleWorkouts { get; set; } = new List<Workout>();
+        private List<WorkoutDto> SampleWorkoutsDto { get; set; } = new List<WorkoutDto>();
         private Mock<IWorkoutRepository> MockRepository { get; set; }
         private WorkoutLogic Logic { get; set; }
 
@@ -24,6 +25,7 @@ namespace Workouts.UnitTests.Logic
             SampleWorkout = logic.ConvertWorkoutDtoToWorkout(SampleWorkoutDto);
             SampleWorkout.UserId = 1;
             SampleWorkouts = new List<Workout>() { SampleWorkout };
+            SampleWorkoutsDto = new List<WorkoutDto>() { SampleWorkoutDto };
             DeactivatedWorkout = GetDeactivatedWorkout();
 
             MockRepository = new Mock<IWorkoutRepository>();
@@ -84,7 +86,7 @@ namespace Workouts.UnitTests.Logic
         {
             var returnedWorkouts = Logic.GetWorkoutsByUserId(SampleWorkout.UserId);
 
-            Assert.Equivalent(returnedWorkouts, SampleWorkouts);
+            Assert.Equivalent(returnedWorkouts, SampleWorkoutsDto);
         }
 
         [Fact]

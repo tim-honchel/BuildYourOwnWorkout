@@ -15,17 +15,13 @@ namespace Workouts.Logic.Implementations
             Repository = repository;
         }
 
-        public User GetCurrentUser(HttpContext context)
+        public User GetUser(string identifier, string username)
         {
-            var identifier = context.User.Claims
-                .Where(c => c.Type.Equals(System.Security.Claims.ClaimTypes.NameIdentifier))
-                .Select(c => c.Value)
-                .FirstOrDefault();
             var user = Repository.GetUser(identifier);
 
             if (user == null) 
             {
-                AddUser(context, identifier);
+                AddUser(username, identifier);
                 user = Repository.GetUser(identifier);
             }
             else if (user.Active == false)
@@ -47,9 +43,8 @@ namespace Workouts.Logic.Implementations
             Repository.UpdateUser(user);
         }
 
-        private void AddUser(HttpContext context, string identifier)
+        private void AddUser(string username, string identifier)
         {
-            var username = context.User.Identity != null ? context.User.Identity.Name : string.Empty;
             var newUser = new User()
             {
                 NameIdentifierClaim = identifier,

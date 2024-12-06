@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Workouts.Entities.Dto;
-using Workouts.Logic.Implementations;
+using Workouts.Logic.Interfaces;
 
 namespace Workouts.Api.Controllers
 {
@@ -8,10 +8,10 @@ namespace Workouts.Api.Controllers
     [Route("[controller]")]
     public class MainController : ControllerBase
     {
-        private UserLogic UserLogic { get; set; }
-        private WorkoutLogic WorkoutLogic { get; set; }
+        private IUserLogic UserLogic { get; set; }
+        private IWorkoutLogic WorkoutLogic { get; set; }
 
-        public MainController(UserLogic userLogic, WorkoutLogic workoutLogic) 
+        public MainController(IUserLogic userLogic, IWorkoutLogic workoutLogic) 
         {
             UserLogic = userLogic;
             WorkoutLogic = workoutLogic;
@@ -19,13 +19,13 @@ namespace Workouts.Api.Controllers
 
         // use headers for authentication and authorization
 
-        [HttpGet("CurrentUserId")]
-        public IActionResult OnGetCurrentUserId()
+        [HttpGet("UserId")]
+        public IActionResult OnGetUserId()
         {
             throw new NotImplementedException();
         }
 
-        [HttpGet("CurrentUsername")]
+        [HttpGet("Username")]
         public IActionResult OnGetUsername()
         {
             throw new NotImplementedException();
@@ -45,12 +45,6 @@ namespace Workouts.Api.Controllers
 
         [HttpPost("AddWorkout")]
         public IActionResult OnPostAddWorkout([FromBody]WorkoutDto workout)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpPost("ValidateWorkout")]
-        public IActionResult OnPostValidateWorkout([FromBody]WorkoutDto workout)
         {
             throw new NotImplementedException();
         }

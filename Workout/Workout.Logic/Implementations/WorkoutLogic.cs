@@ -42,10 +42,17 @@ namespace Workouts.Logic.Implementations
             return workoutDto;
         }
 
-        public List<Workout> GetWorkoutsByUserId(long userId)
+        public List<WorkoutDto> GetWorkoutsByUserId(long userId)
         {
             var workouts = Repository.GetWorkoutsByUserId(userId) ?? new List<Workout>();
-            return workouts;
+            var workoutDtos = new List<WorkoutDto>();
+            foreach (var workout in workouts)
+            {
+                workoutDtos.Add(ConvertWorkoutToWorkoutDto(workout));
+            }
+            {
+            }
+            return workoutDtos;
         }
 
         public void UnarchiveWorkout(long workoutId)

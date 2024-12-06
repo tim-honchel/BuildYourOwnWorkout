@@ -14,26 +14,14 @@ namespace Workouts.UnitTests.Logic
         private User DeactivatedUser { get; set; }
         private User ExistingUser { get; set; }
         private User NewUser { get; set; }
-        private Mock<HttpContext> MockContextForDeactivatedUser { get; set; }
-        private Mock<HttpContext> MockContextForExistingUser { get; set; }
-        private Mock<HttpContext> MockContextForNewUser { get; set; }
         private Mock<IUserRepository> MockRepository { get; set; }
         private UserLogic Logic { get; set; }
 
         public UserLogicTests() 
         { 
-
             ExistingUser = GetExistingUser();
-            MockContextForExistingUser = new Mock<HttpContext>();
-            MockContextForExistingUser.Setup(m => m.User).Returns(GetClaimsPrincipal(ExistingUser));
-
             NewUser = GetNewUser();
-            MockContextForNewUser = new Mock<HttpContext>();
-            MockContextForNewUser.Setup(m => m.User).Returns(GetClaimsPrincipal(NewUser));
-
             DeactivatedUser = GetDeactivatedUser();
-            MockContextForDeactivatedUser = new Mock<HttpContext>();
-            MockContextForDeactivatedUser.Setup(m => m.User).Returns(GetClaimsPrincipal(DeactivatedUser));
 
             MockRepository = new Mock<IUserRepository>();
             MockRepository.Setup(m => m.GetUser(It.Is<string>(i => i == ExistingUser.NameIdentifierClaim))).Returns(ExistingUser);
@@ -43,17 +31,7 @@ namespace Workouts.UnitTests.Logic
 
         public void Dispose()
         {
-            MockContextForExistingUser.Reset();
-            MockContextForNewUser.Reset();
             MockRepository.Reset();
-        }
-
-        private ClaimsPrincipal GetClaimsPrincipal(User user)
-        {
-            var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.NameIdentifierClaim) };
-            var identity = new ClaimsIdentity(claims);
-            var principal = new ClaimsPrincipal( new List<ClaimsIdentity>() { identity});
-            return principal;
         }
 
         private User GetDeactivatedUser()
@@ -92,19 +70,17 @@ namespace Workouts.UnitTests.Logic
         }
 
         [Fact]
-        public void GetCurrentUser_ReturnsUser_GivenExistingUser()
+        public void GetUser_ReturnsUser_GivenExistingUser()
         {
-            var identifier = ExistingUser.NameIdentifierClaim;
-
-            var returnedUser = Logic.GetCurrentUser(MockContextForExistingUser.Object);
+            var returnedUser = Logic.GetUser(ExistingUser.NameIdentifierClaim, ExistingUser.Username);
 
             Assert.Equivalent(returnedUser, ExistingUser);
         }
 
         [Fact]
-        public void GetCurrentUser_AddsUser_GivenNonexistentUser()
+        public void GetUser_AddsUser_GivenNonexistentUser()
         {
-            Logic.GetCurrentUser(MockContextForNewUser.Object);
+            Logic.GetUser(NewUser.NameIdentifierClaim, NewUser.Username);
 
             MockRepository.Verify(m => m.AddUser(It.Is<User>(u => u.NameIdentifierClaim == NewUser.NameIdentifierClaim)), Times.Once());
         }
@@ -112,7 +88,7 @@ namespace Workouts.UnitTests.Logic
         [Fact]
         public void GetCurrentUser_ThrowsCustomException_GivenDeactivatedUser()
         {
-            Assert.Throws<DeactivatedUserException>(() => Logic.GetCurrentUser(MockContextForDeactivatedUser.Object));
+            Assert.Throws<DeactivatedUserException>(() => Logic.GetUser(DeactivatedUser.NameIdentifierClaim, DeactivatedUser.Username));
         }
 
         [Fact]

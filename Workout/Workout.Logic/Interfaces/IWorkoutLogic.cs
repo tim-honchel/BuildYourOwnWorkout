@@ -7,7 +7,7 @@ namespace Workouts.Logic.Interfaces
     {
         long AddWorkout(WorkoutDto workoutDto);
         void ArchiveWorkout(long workoutId);
-        List<Workout> GetWorkoutsByUserId(long userId);
+        List<WorkoutDto> GetWorkoutsByUserId(long userId);
         WorkoutDto GetWorkoutById(long workoutId); 
         void UpdateWorkout(WorkoutDto workoutDto);
         void UnarchiveWorkout(long workoutId);
