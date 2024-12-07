@@ -208,7 +208,7 @@ namespace Workouts.UnitTests.Api
         [Fact]
         public void OnGetWorkout_ReturnsNotFound_GivenWorkoutDoesNotExistException()
         {
-            var response = (OkObjectResult)ControllerWithoutUser.OnGetWorkout(InvalidWorkoutDto.Id);
+            var response = ControllerWithoutUser.OnGetWorkout(InvalidWorkoutDto.Id);
 
             Assert.IsType<NotFoundResult>(response);
         }
