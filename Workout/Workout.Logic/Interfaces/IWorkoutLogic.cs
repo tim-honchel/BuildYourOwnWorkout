@@ -1,5 +1,4 @@
-﻿using Workouts.Entities.Database;
-using Workouts.Entities.Dto;
+﻿using Workouts.Entities.Dto;
 
 namespace Workouts.Logic.Interfaces
 {
@@ -11,7 +10,6 @@ namespace Workouts.Logic.Interfaces
         WorkoutDto GetWorkoutById(long workoutId); 
         void UpdateWorkout(WorkoutDto workoutDto);
         void UnarchiveWorkout(long workoutId);
-        string ValidateWorkout(WorkoutDto workoutDto);
 
     }
 }

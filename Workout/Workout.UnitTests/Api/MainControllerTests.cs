@@ -8,6 +8,7 @@ using Workouts.Entities.Database;
 using Workouts.Entities.Dto;
 using Workouts.Logic.Implementations;
 using Workouts.Logic.Interfaces;
+using Workouts.Services;
 
 namespace Workouts.UnitTests.Api
 {
@@ -30,9 +31,8 @@ namespace Workouts.UnitTests.Api
             ActiveUser = GetActiveUser();
             DeactivatedUser = GetDeactivatedUser();
 
-            var logic = new WorkoutLogic(null);
-            SampleWorkoutDto = logic.GetSampleWorkoutDto();
-            InvalidWorkoutDto = logic.GetSampleWorkoutDto();
+            SampleWorkoutDto = WorkoutService.GetSampleWorkoutDto();
+            InvalidWorkoutDto = WorkoutService.GetSampleWorkoutDto();
             InvalidWorkoutDto.Id = 2;
             InvalidWorkoutDto.Title = string.Empty;
             SampleWorkoutsDto = new List<WorkoutDto>() { SampleWorkoutDto };
@@ -122,8 +122,8 @@ namespace Workouts.UnitTests.Api
         private void SetupMockWorkoutLogic()
         {
             MockWorkoutLogic.Setup(m => m.AddWorkout(
-                It.Is<WorkoutDto>(i => i.Id == SampleWorkoutDto.Id)))
-                .Returns(SampleWorkoutDto.Id);
+                It.Is<WorkoutDto>(i => i.Id == 0)))
+                .Returns(1);
 
             MockWorkoutLogic.Setup(m => m.GetWorkoutById(
                 It.Is<long>(i => i == SampleWorkoutDto.Id)))
@@ -136,14 +136,6 @@ namespace Workouts.UnitTests.Api
             MockWorkoutLogic.Setup(m => m.GetWorkoutsByUserId(
                 It.Is<long>(i => i == ActiveUser.Id)))
                 .Returns(SampleWorkoutsDto);
-
-            MockWorkoutLogic.Setup(m => m.ValidateWorkout(
-                It.Is<WorkoutDto>(i => i.Id == SampleWorkoutDto.Id)))
-                .Returns(string.Empty);
-
-            MockWorkoutLogic.Setup(m => m.ValidateWorkout(
-                 It.Is<WorkoutDto>(i => i.Id == InvalidWorkoutDto.Id)))
-                .Returns("error");
         }
 
         [Fact]
@@ -225,10 +217,12 @@ namespace Workouts.UnitTests.Api
         [Fact]
         public void OnPostAddWorkout_ReturnsOkWithId_GivenValidWorkout()
         {
-            var response = (OkObjectResult)ControllerWithoutUser.OnPostAddWorkout(SampleWorkoutDto);
+            var workout = WorkoutService.GetSampleWorkoutDto();
+            workout.Id = 0;
+            var response = (OkObjectResult)ControllerWithoutUser.OnPostAddWorkout(workout);
             var returnedId = response.Value;
 
-            Assert.Equal(returnedId, SampleWorkoutDto.Id);
+            Assert.True(returnedId != null && (long)returnedId > 0);
         }
 
         [Fact]

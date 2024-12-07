@@ -1,10 +1,10 @@
 ﻿using Moq;
-using System.Collections;
 using Workouts.Data.Interfaces;
 using Workouts.Entities.CustomExceptions;
 using Workouts.Entities.Database;
 using Workouts.Entities.Dto;
 using Workouts.Logic.Implementations;
+using Workouts.Services;
 
 namespace Workouts.UnitTests.Logic
 {
@@ -20,9 +20,8 @@ namespace Workouts.UnitTests.Logic
 
         public WorkoutLogicTests()
         {
-            var logic = new WorkoutLogic(null);
-            SampleWorkoutDto = logic.GetSampleWorkoutDto();
-            SampleWorkout = logic.ConvertWorkoutDtoToWorkout(SampleWorkoutDto);
+            SampleWorkoutDto = WorkoutService.GetSampleWorkoutDto();
+            SampleWorkout = WorkoutService.ConvertWorkoutDtoToWorkout(SampleWorkoutDto);
             SampleWorkout.UserId = 1;
             SampleWorkouts = new List<Workout>() { SampleWorkout };
             SampleWorkoutsDto = new List<WorkoutDto>() { SampleWorkoutDto };
@@ -42,7 +41,7 @@ namespace Workouts.UnitTests.Logic
 
         private Workout GetDeactivatedWorkout()
         {
-            var deactivatedWorkout = new WorkoutLogic(null).ConvertWorkoutDtoToWorkout(SampleWorkoutDto);
+            var deactivatedWorkout = WorkoutService.ConvertWorkoutDtoToWorkout(SampleWorkoutDto);
             deactivatedWorkout.Id = -2;
             deactivatedWorkout.UserId = 2;
             deactivatedWorkout.Active = false;
@@ -110,61 +109,13 @@ namespace Workouts.UnitTests.Logic
         [Fact]
         public void UpdateWorkout_UpdatesWorkout()
         {
-            var workoutToUpdate = new WorkoutLogic(null).GetSampleWorkoutDto();
+            var workoutToUpdate = WorkoutService.GetSampleWorkoutDto();
             workoutToUpdate.Title = "updatedTitle";
 
             Logic.UpdateWorkout(workoutToUpdate);
 
             MockRepository.Verify(m => m.UpdateWorkout(It.Is<Workout>(w => w.Id == workoutToUpdate.Id && w.Title == workoutToUpdate.Title)), Times.Once());
         }
-
-        [Fact]
-        public void ValidateWorkout_ReturnsEmptyString_GivenValidWorkout()
-        {
-            string validationErrors = Logic.ValidateWorkout(SampleWorkoutDto);
-
-            Assert.True(validationErrors == string.Empty);
-        }
-
-        [Theory]
-        [MemberData(nameof(TestDataGenerator.GetInvalidWorkoutDtos),MemberType = typeof(TestDataGenerator))]
-        public void ValidateWorkout_ReturnsNonEmptyString_GivenInvalidWorkout(WorkoutDto invalidWorkoutDto)
-        {
-            string validationErrors = Logic.ValidateWorkout(invalidWorkoutDto);
-
-            Assert.True(validationErrors != string.Empty);
-        }
-    }
-
-    public class TestDataGenerator : IEnumerable<object[]>
-    {
-        public IEnumerator<object[]> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        public static IEnumerable<object[]> GetInvalidWorkoutDtos()
-        {
-            yield return new object[] {
-                new WorkoutDto { Title = string.Empty, Exercises = new List<Exercise>() { new Exercise()}, TransitionTime = 1 }, // empty title
-            };
-            yield return new object[]
-            {
-                new WorkoutDto { Title = "<invalid>", Exercises = new List<Exercise>() { new Exercise()}, TransitionTime = 1 }, // invalid title
-            };
-            yield return new object[] 
-            {
-                new WorkoutDto { Title = "title", Exercises = new List<Exercise>() {}, TransitionTime = 1 }, // no exercises
-            };
-            yield return new object[]
-            {
-                new WorkoutDto { Title = "title", Exercises = new List<Exercise>() { new Exercise()}, TransitionTime = 100 }, // invalid transition time
-            };
-        }
+  
     }
 }

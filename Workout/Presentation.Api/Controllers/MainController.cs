@@ -5,6 +5,7 @@ using Workouts.Entities.CustomExceptions;
 using Workouts.Entities.Dto;
 using Workouts.Entities.Misc;
 using Workouts.Logic.Interfaces;
+using Workouts.Services;
 
 namespace Workouts.Api.Controllers
 {
@@ -37,7 +38,7 @@ namespace Workouts.Api.Controllers
                 var id = UserLogic.GetUser(headers.UserIdentifier, headers.Username).Id;
                 return new OkObjectResult(id);
             }
-            catch (DeactivatedUserException e)
+            catch (DeactivatedUserException)
             {
                 return new ForbidResult();
             }
@@ -57,7 +58,7 @@ namespace Workouts.Api.Controllers
                 var id = UserLogic.GetUser(headers.UserIdentifier, headers.Username).Username;
                 return new OkObjectResult(id);
             }
-            catch (DeactivatedUserException e)
+            catch (DeactivatedUserException)
             {
                 return new ForbidResult();
             }
@@ -71,7 +72,7 @@ namespace Workouts.Api.Controllers
                 var workoutDto = WorkoutLogic.GetWorkoutById(workoutId);
                 return new OkObjectResult(workoutDto);
             }
-            catch (WorkoutDoesNotExistException e)
+            catch (WorkoutDoesNotExistException)
             {
                 return new NotFoundResult();
             }
@@ -93,7 +94,7 @@ namespace Workouts.Api.Controllers
         [HttpPost("AddWorkout")]
         public IActionResult OnPostAddWorkout([FromBody]WorkoutDto workout)
         {
-            var validationErrors = WorkoutLogic.ValidateWorkout(workout);
+            string validationErrors = WorkoutService.ValidateWorkout(workout, true);
             if (!string.IsNullOrEmpty(validationErrors))
             {
                 return new BadRequestObjectResult(validationErrors);
@@ -130,7 +131,7 @@ namespace Workouts.Api.Controllers
                 UserLogic.UpdateUsername(user, username);
                 return new OkResult();
             }
-            catch (DeactivatedUserException e)
+            catch (DeactivatedUserException)
             {
                 return new ForbidResult();
             }
@@ -139,7 +140,7 @@ namespace Workouts.Api.Controllers
         [HttpPut("UpdateWorkout")]
         public IActionResult OnPutUpdateWorkout([FromBody]WorkoutDto workout)
         {
-            string validationErrors = WorkoutLogic.ValidateWorkout(workout);
+            string validationErrors = WorkoutService.ValidateWorkout(workout);
             if (!string.IsNullOrEmpty(validationErrors))
             {
                 return new BadRequestObjectResult(validationErrors);
