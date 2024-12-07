@@ -1,12 +1,10 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Workouts.Api.Controllers;
 using Workouts.Entities.CustomExceptions;
 using Workouts.Entities.Database;
 using Workouts.Entities.Dto;
-using Workouts.Logic.Implementations;
 using Workouts.Logic.Interfaces;
 using Workouts.Services;
 
