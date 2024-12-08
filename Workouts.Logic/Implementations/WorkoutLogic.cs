@@ -9,28 +9,28 @@ namespace Workouts.Logic.Implementations
 {
     public class WorkoutLogic : IWorkoutLogic
     {
-        private IWorkoutRepository Repository { get; set; }
+        private IWorkoutRepository _repository;
 
         public WorkoutLogic(IWorkoutRepository repository)
         {
-            Repository = repository;
+            _repository = repository;
         }
         public long AddWorkout(WorkoutDto workoutDto)
         {
             var workout = WorkoutService.ConvertWorkoutDtoToWorkout(workoutDto);
-            return Repository.AddWorkout(workout);
+            return _repository.AddWorkout(workout);
         }
 
         public void ArchiveWorkout(long workoutId)
         {
-            var workout = Repository.GetWorkoutById(workoutId);
+            var workout = _repository.GetWorkoutById(workoutId);
             workout.Active = false;
-            Repository.UpdateWorkout(workout);
+            _repository.UpdateWorkout(workout);
         }
 
         public WorkoutDto GetWorkoutById(long workoutId)
         {
-            var workout = Repository.GetWorkoutById(workoutId);
+            var workout = _repository.GetWorkoutById(workoutId);
             if (workout == null)
             {
                 throw new WorkoutDoesNotExistException();
@@ -41,7 +41,7 @@ namespace Workouts.Logic.Implementations
 
         public List<WorkoutDto> GetWorkoutsByUserId(long userId)
         {
-            var workouts = Repository.GetWorkoutsByUserId(userId) ?? new List<Workout>();
+            var workouts = _repository.GetWorkoutsByUserId(userId) ?? new List<Workout>();
             var workoutDtos = new List<WorkoutDto>();
             foreach (var workout in workouts)
             {
@@ -53,15 +53,15 @@ namespace Workouts.Logic.Implementations
 
         public void UnarchiveWorkout(long workoutId)
         {
-            var workout = Repository.GetWorkoutById(workoutId);
+            var workout = _repository.GetWorkoutById(workoutId);
             workout.Active = true;
-            Repository.UpdateWorkout(workout);
+            _repository.UpdateWorkout(workout);
         }
 
         public void UpdateWorkout(WorkoutDto workoutDto)
         {
             var workout = WorkoutService.ConvertWorkoutDtoToWorkout(workoutDto);
-            Repository.UpdateWorkout(workout);
+            _repository.UpdateWorkout(workout);
         }
 
         

@@ -6,16 +6,16 @@ namespace Workouts.Data.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private IDbContextFactory<Context> ContextFactory { get; set; }
+        private IDbContextFactory<Context> _contextFactory;
 
         public UserRepository(IDbContextFactory<Context> contextFactory)
         {
-            ContextFactory = contextFactory;
+            _contextFactory = contextFactory;
         }
 
         public void AddUser(User user)
         {
-            using var context = ContextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             context.User.Add(user);
             context.SaveChanges();
             context.Dispose();
@@ -23,7 +23,7 @@ namespace Workouts.Data.Repositories
 
         public User GetUser(string nameIdentifierClaim)
         {
-            using var context = ContextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             var user = context.User
                 .FirstOrDefault(u => u.NameIdentifierClaim == nameIdentifierClaim);
             context.Dispose();
@@ -32,7 +32,7 @@ namespace Workouts.Data.Repositories
 
         public void UpdateUser(User user)
         {
-            using var context = ContextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             context.User .Update(user);
             context.SaveChanges();
             context.Dispose();

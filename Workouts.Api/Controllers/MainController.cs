@@ -1,4 +1,3 @@
-using Castle.Components.DictionaryAdapter.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Workouts.Entities.CustomExceptions;
@@ -13,16 +12,14 @@ namespace Workouts.Api.Controllers
     [Route("[controller]")]
     public class MainController : ControllerBase
     {
-        private IUserLogic UserLogic { get; set; }
-        private IWorkoutLogic WorkoutLogic { get; set; }
+        private IUserLogic _userLogic;
+        private IWorkoutLogic _workoutLogic;
 
         public MainController(IUserLogic userLogic, IWorkoutLogic workoutLogic) 
         {
-            UserLogic = userLogic;
-            WorkoutLogic = workoutLogic;
+            _userLogic = userLogic;
+            _workoutLogic = workoutLogic;
         }
-
-        // use headers for authentication and authorization
 
         [HttpGet("UserId")]
         public IActionResult OnGetUserId()
@@ -35,7 +32,7 @@ namespace Workouts.Api.Controllers
             }
             try
             {
-                var id = UserLogic.GetUser(headers.UserIdentifier, headers.Username).Id;
+                var id = _userLogic.GetUser(headers.UserIdentifier, headers.Username).Id;
                 return new OkObjectResult(id);
             }
             catch (DeactivatedUserException)
@@ -55,7 +52,7 @@ namespace Workouts.Api.Controllers
             }
             try
             {
-                var id = UserLogic.GetUser(headers.UserIdentifier, headers.Username).Username;
+                var id = _userLogic.GetUser(headers.UserIdentifier, headers.Username).Username;
                 return new OkObjectResult(id);
             }
             catch (DeactivatedUserException)
@@ -69,7 +66,7 @@ namespace Workouts.Api.Controllers
         {
             try
             {
-                var workoutDto = WorkoutLogic.GetWorkoutById(workoutId);
+                var workoutDto = _workoutLogic.GetWorkoutById(workoutId);
                 return new OkObjectResult(workoutDto);
             }
             catch (WorkoutDoesNotExistException)
@@ -82,7 +79,7 @@ namespace Workouts.Api.Controllers
         [HttpGet("Workouts/{userId}")]
         public IActionResult OnGetWorkouts(long userId)
         {
-            var workoutsDto = WorkoutLogic.GetWorkoutsByUserId(userId);
+            var workoutsDto = _workoutLogic.GetWorkoutsByUserId(userId);
             var workoutsData = new Dictionary<long, string>();
             foreach (var workout in workoutsDto)
             {
@@ -99,21 +96,21 @@ namespace Workouts.Api.Controllers
             {
                 return new BadRequestObjectResult(validationErrors);
             }
-            var workoutId = WorkoutLogic.AddWorkout(workout);
+            var workoutId = _workoutLogic.AddWorkout(workout);
             return new OkObjectResult(workoutId);
         }
 
         [HttpPut("ArchiveWorkout/{workoutId}")]
         public IActionResult OnPutArchiveWorkout(long workoutId)
         {
-            WorkoutLogic.ArchiveWorkout(workoutId);
+            _workoutLogic.ArchiveWorkout(workoutId);
             return new OkResult();
         }
 
         [HttpPut("UnarchiveWorkout/{workoutId}")]
         public IActionResult OnPutUnarchiveWorkout(long workoutId)
         {
-            WorkoutLogic.UnarchiveWorkout(workoutId);
+            _workoutLogic.UnarchiveWorkout(workoutId);
             return new OkResult();
         }
 
@@ -127,8 +124,8 @@ namespace Workouts.Api.Controllers
             }
             try
             {
-                var user = UserLogic.GetUser(headers.UserIdentifier, headers.Username);
-                UserLogic.UpdateUsername(user, username);
+                var user = _userLogic.GetUser(headers.UserIdentifier, headers.Username);
+                _userLogic.UpdateUsername(user, username);
                 return new OkResult();
             }
             catch (DeactivatedUserException)
@@ -145,7 +142,7 @@ namespace Workouts.Api.Controllers
             {
                 return new BadRequestObjectResult(validationErrors);
             }
-            WorkoutLogic.UpdateWorkout(workout);
+            _workoutLogic.UpdateWorkout(workout);
             return new OkResult();  
         }
         

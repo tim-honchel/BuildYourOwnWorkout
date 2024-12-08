@@ -6,16 +6,16 @@ namespace Workouts.Data.Repositories
 {
     public class WorkoutRepository : IWorkoutRepository
     {
-        private IDbContextFactory<Context> ContextFactory { get; set; }
+        private IDbContextFactory<Context> _contextFactory;
 
         public WorkoutRepository(IDbContextFactory<Context> contextFactory)
         {
-            ContextFactory = contextFactory;
+            _contextFactory = contextFactory;
         }
 
         public long AddWorkout(Workout workout)
         {
-            using var context = ContextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             context.Workout.Add(workout);
             context.SaveChanges();
             context.Dispose();
@@ -24,7 +24,7 @@ namespace Workouts.Data.Repositories
 
         public Workout GetWorkoutById(long id)
         {
-            using var context = ContextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             var workout = context.Workout
                 .FirstOrDefault(w => w.Id == id);
             context.Dispose();
@@ -33,7 +33,7 @@ namespace Workouts.Data.Repositories
 
         public List<Workout> GetWorkoutsByUserId(long userId)
         {
-            using var context = ContextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             var workouts = context.Workout
                 .Where(w => w.UserId == userId)
                 .ToList();
@@ -43,7 +43,7 @@ namespace Workouts.Data.Repositories
 
         public void UpdateWorkout(Workout workout)
         {
-            using var context = ContextFactory.CreateDbContext();
+            using var context = _contextFactory.CreateDbContext();
             context.Workout.Update(workout);
             context.SaveChanges();
             context.Dispose();

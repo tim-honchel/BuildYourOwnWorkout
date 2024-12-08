@@ -4,19 +4,19 @@ namespace Workouts.Presentation.Services
 {
     public class ApiCallService : IApiCallService
     {
-        private HttpContext Context;
-        private HttpClient Client;
+        private HttpContext _context;
+        private HttpClient _client;
 
         public ApiCallService(HttpContext context)
         {
-            Context = context;
-            Client = new HttpClient();
+            _context = context;
+            _client = new HttpClient();
         }
 
         public ApiCallService(HttpContext context, HttpMessageHandler handler)
         {
-            Context = context;
-            Client = new HttpClient(handler);
+            _context = context;
+            _client = new HttpClient(handler);
         }
 
         public long GetUserId()

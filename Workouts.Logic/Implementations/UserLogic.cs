@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Workouts.Data.Interfaces;
+﻿using Workouts.Data.Interfaces;
 using Workouts.Entities.CustomExceptions;
 using Workouts.Entities.Database;
 using Workouts.Logic.Interfaces;
@@ -8,21 +7,21 @@ namespace Workouts.Logic.Implementations
 {
     public class UserLogic : IUserLogic
     {
-        private IUserRepository Repository { get; set; }
+        private IUserRepository _repository;
 
         public UserLogic(IUserRepository repository) 
         {
-            Repository = repository;
+            _repository = repository;
         }
 
         public User GetUser(string identifier, string username)
         {
-            var user = Repository.GetUser(identifier);
+            var user = _repository.GetUser(identifier);
 
             if (user == null) 
             {
                 AddUser(username, identifier);
-                user = Repository.GetUser(identifier);
+                user = _repository.GetUser(identifier);
             }
             else if (user.Active == false)
             {
@@ -31,7 +30,7 @@ namespace Workouts.Logic.Implementations
             else if (user.LastLogin < DateTime.Today)
             {
                 user.LastLogin = DateTime.Today;
-                Repository.UpdateUser(user);
+                _repository.UpdateUser(user);
             }
 
             return user;
@@ -40,7 +39,7 @@ namespace Workouts.Logic.Implementations
         public void UpdateUsername(User user, string newUsername)
         {
             user.Username = newUsername;
-            Repository.UpdateUser(user);
+            _repository.UpdateUser(user);
         }
 
         private void AddUser(string username, string identifier)
@@ -53,7 +52,7 @@ namespace Workouts.Logic.Implementations
                 AccountCreated = DateTime.Today,
                 LastLogin = DateTime.Today,
             };
-            Repository.AddUser(newUser);
+            _repository.AddUser(newUser);
         }
     }
 }
