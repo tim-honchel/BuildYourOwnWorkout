@@ -81,12 +81,14 @@ namespace Workouts.UnitTests.Presentation
         {
             var responseJson = JsonConvert.SerializeObject(responseContent);
             var content = new StringContent(responseJson);
-            var response = new HttpResponseMessage() { StatusCode = HttpStatusCode.OK, Content = content };
+            var response = new HttpResponseMessage() { StatusCode = responseCode, Content = content };
 
-            mockHandler.Protected().Setup<HttpResponseMessage>
-                ("Send", It.Is<HttpRequestMessage>(r => r.Method == requestMethod 
-                    && r.RequestUri.ToString().Contains(endpoint)))
-                .Returns(response).Verifiable();
+            mockHandler.Protected().Setup<Task<HttpResponseMessage>>
+                ("SendAsync", ItExpr.Is<HttpRequestMessage>(r => r.Method == requestMethod
+                    && r.RequestUri != null
+                    && r.RequestUri.ToString().Contains(endpoint)), 
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(response).Verifiable();
         }
 
         private ApiCallService GetApiCallService(Mock<HttpMessageHandler> mockHandler)
@@ -97,104 +99,104 @@ namespace Workouts.UnitTests.Presentation
 
 
         [Fact]
-        public void GetUserId_ShouldReturnId_GivenOk()
+        public async Task GetUserId_ShouldReturnId_GivenOk()
         {
-            long returnedId = ServiceWithActiveUserValidWorkout.GetUserId();
+            long returnedId = await ServiceWithActiveUserValidWorkout.GetUserId();
 
             Assert.Equal(ActiveUserId, returnedId);
         }
 
 
         [Fact]
-        public void GetUserId_ShouldThrowCustomException_GivenForbidden()
+        public async Task GetUserId_ShouldThrowCustomException_GivenForbidden()
         {
-            Assert.Throws<DeactivatedUserException>(() => ServiceWithDeactivatedUserInvalidWorkout.GetUserId());
+            await Assert.ThrowsAsync<DeactivatedUserException>(() => ServiceWithDeactivatedUserInvalidWorkout.GetUserId());
         }
 
         [Fact]
-        public void GetUsername_ShouldReturnUsername_GivenOk()
+        public async Task GetUsername_ShouldReturnUsername_GivenOk()
         {
-            string returnedUsername = ServiceWithActiveUserValidWorkout.GetUsername();
+            string returnedUsername = await ServiceWithActiveUserValidWorkout.GetUsername();
 
             Assert.Equal(ActiveUsername, returnedUsername);
         }
 
         [Fact]
-        public void GetUsername_ShouldThrowCustomException_GivenForbidden()
+        public async Task GetUsername_ShouldThrowCustomException_GivenForbidden()
         {
-            Assert.Throws<DeactivatedUserException>(() => ServiceWithDeactivatedUserInvalidWorkout.GetUsername());
+            await Assert.ThrowsAsync<DeactivatedUserException>(() => ServiceWithDeactivatedUserInvalidWorkout.GetUsername());
         }
 
         [Fact]
-        public void GetWorkout_ShouldReturnWorkout_GivenOk()
+        public async Task GetWorkout_ShouldReturnWorkout_GivenOk()
         {
-            var returnedWorkout = ServiceWithActiveUserValidWorkout.GetWorkout(ValidWorkout.Id);
+            var returnedWorkout = await ServiceWithActiveUserValidWorkout.GetWorkout(ValidWorkout.Id);
 
             Assert.Equivalent(ValidWorkout, returnedWorkout);
         }
 
         [Fact]
-        public void GetWorkout_ShouldThrowCustomException_GivenNotFound()
+        public async Task GetWorkout_ShouldThrowCustomException_GivenNotFound()
         {
-            Assert.Throws<WorkoutDoesNotExistException>(() => ServiceWithActiveUserValidWorkout.GetWorkout(InvalidWorkout.Id));
+            await Assert.ThrowsAsync<WorkoutDoesNotExistException>(() => ServiceWithDeactivatedUserInvalidWorkout.GetWorkout(InvalidWorkout.Id));
         }
 
         [Fact]
-        public void GetWorkouts_ShouldReturnWorkouts_GivenOk()
+        public async Task GetWorkouts_ShouldReturnWorkouts_GivenOk()
         {
-            var returnedWorkoutData = ServiceWithActiveUserValidWorkout.GetWorkouts(ActiveUserId);
+            var returnedWorkoutData = await ServiceWithActiveUserValidWorkout.GetWorkouts(ActiveUserId);
 
             Assert.Equivalent(WorkoutData, returnedWorkoutData);
         }
 
         [Fact]
-        public void AddWorkout_ShouldReturnId_GivenOk()
+        public async Task AddWorkout_ShouldReturnId_GivenOk()
         {
-            var returnedId = ServiceWithActiveUserValidWorkout.AddWorkout(ValidWorkout);
+            var returnedId = await ServiceWithActiveUserValidWorkout.AddWorkout(ValidWorkout);
 
             Assert.Equal(ValidWorkout.Id, returnedId);
         }
 
         [Fact]
-        public void AddWorkout_ShouldThrowCustomException_GivenBadRequest()
+        public async Task AddWorkout_ShouldThrowCustomException_GivenBadRequest()
         {
-            Assert.Throws<InvalidWorkoutException>(() => ServiceWithDeactivatedUserInvalidWorkout.AddWorkout(InvalidWorkout));
+            await Assert.ThrowsAsync<InvalidWorkoutException>(() => ServiceWithDeactivatedUserInvalidWorkout.AddWorkout(InvalidWorkout));
         }
 
         [Fact]
-        public void ArchiveWorkout_ShouldNotThrowException_GivenOk()
+        public async Task ArchiveWorkout_ShouldNotThrowException_GivenOk()
         {
-            ServiceWithActiveUserValidWorkout.ArchiveWorkout(ValidWorkout.Id);
+            await ServiceWithActiveUserValidWorkout.ArchiveWorkout(ValidWorkout.Id);
         }
 
         [Fact]
-        public void UnarchiveWorkout_ShouldNotThrowException_GivenOk()
+        public async Task UnarchiveWorkout_ShouldNotThrowException_GivenOk()
         {
-            ServiceWithActiveUserValidWorkout.UnarchiveWorkout(ValidWorkout.Id);
+            await ServiceWithActiveUserValidWorkout.UnarchiveWorkout(ValidWorkout.Id);
         }
 
         [Fact]
-        public void UpdateUsername_ShouldNotThrowException_GivenOk()
+        public async Task UpdateUsername_ShouldNotThrowException_GivenOk()
         {
-            ServiceWithActiveUserValidWorkout.UpdateUsername("newUsername");
+            await ServiceWithActiveUserValidWorkout.UpdateUsername("newUsername");
         }
 
         [Fact]
-        public void UpdateUsername_ShouldThrowCustomException_GivenForbidden()
+        public async Task UpdateUsername_ShouldThrowCustomException_GivenForbidden()
         {
-            Assert.Throws<DeactivatedUserException>(() => ServiceWithDeactivatedUserInvalidWorkout.UpdateUsername("newUsername"));
+            await Assert.ThrowsAsync<DeactivatedUserException>(() => ServiceWithDeactivatedUserInvalidWorkout.UpdateUsername("newUsername"));
         }
 
         [Fact]
-        public void UpdateWorkout_ShouldNotThrowException_GivenOk()
+        public async Task UpdateWorkout_ShouldNotThrowException_GivenOk()
         {
-            ServiceWithActiveUserValidWorkout.UpdateWorkout(ValidWorkout);
+            await ServiceWithActiveUserValidWorkout.UpdateWorkout(ValidWorkout);
         }
 
         [Fact]
-        public void UpdateWorkout_ShouldThrowCustomException_GivenBadRequest()
+        public async Task UpdateWorkout_ShouldThrowCustomException_GivenBadRequest()
         {
-            Assert.Throws<InvalidWorkoutException>(() => ServiceWithDeactivatedUserInvalidWorkout.UpdateWorkout(InvalidWorkout));
+            await Assert.ThrowsAsync<InvalidWorkoutException>(() => ServiceWithDeactivatedUserInvalidWorkout.UpdateWorkout(InvalidWorkout));
         }
     }
 }
