@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Workouts.Entities\Workouts.Entities.csproj" />
     <ProjectReference Include="..\Workouts.Logic\Workouts.Logic.csproj" />
     <ProjectReference Include="..\Workouts.Presentation\Workouts.Presentation.csproj" />
+    <ProjectReference Include="..\Workouts.Services\Workouts.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

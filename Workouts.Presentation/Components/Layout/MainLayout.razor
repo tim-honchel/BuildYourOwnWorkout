@@ -1,6 +1,17 @@
 ﻿@inherits LayoutComponentBase
+@using Workouts.Presentation.Components.Shared
 
-@Body
+<div>
+    <div>
+        <NavMenu />
+    </div>
+
+    <main>
+        <article>
+            @Body
+        </article>
+    </main>
+</div>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
